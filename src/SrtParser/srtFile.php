@@ -167,10 +167,17 @@ class srtFile{
    * @return boolean
    */
 
-  public static function isValid($_filename){
-    $file_content = file_get_contents($_filename);
+  public static function isValid($_input){
+    if (file_exists($_input)) {
+      $content = file_get_contents($_input);
+      if ($content === false) {
+        return false;
+      }
+    } else {
+      $content = $_input;
+    }
 
-    return preg_match(self::pattern, $file_content);
+    return preg_match(self::pattern, $content);
   }
 
   /**
@@ -237,16 +244,15 @@ class srtFile{
    * Converts file content to UTF-8
    */
   private function convertEncoding(){
-    $exec = array();
-    exec('file -i "'.$this->filename.'"', $exec);
-    $res_exec = explode('=', $exec[0]);
-
-
-    if(empty($res_exec[1]))
-      throw new \Exception('Unable to detect file encoding.');
-    $this->encoding = $res_exec[1];
-
-    $tmp_encoding = strtolower($this->encoding);
+    // If encoding was specified in constructor, use that
+    if (!empty($this->encoding)) {
+      $tmp_encoding = strtolower($this->encoding);
+    } else {
+      // Try to detect encoding
+      $detected = mb_detect_encoding($this->file_content, array('UTF-8', 'Windows-1252', 'ISO-8859-1', 'ISO-8859-15'), true);
+      $this->encoding = $detected ? $detected : self::default_encoding;
+      $tmp_encoding = strtolower($this->encoding);
+    }
 
     switch($tmp_encoding){
       case 'unknown':
@@ -276,11 +282,13 @@ class srtFile{
    * Loads file content and detect file encoding if undefined
    */
   private function loadContent(){
-    if(!file_exists($this->filename))
-      throw new \Exception('File "'.$this->filename.'" not found.');
-
-    if(!($this->file_content = file_get_contents($this->filename)))
-      throw new \Exception($this->filename.' is not a proper .srt file.');
+    if(file_exists($this->filename)) {
+      if(!($this->file_content = file_get_contents($this->filename)))
+        throw new \Exception($this->filename.' is not a proper .srt file.');
+    } else {
+      // Treat filename as direct SRT content
+      $this->file_content = $this->filename;
+    }
 
     $this->file_content .= "\n\n"; // fixes files missing blank lines at the end
     $this->convertEncoding();
