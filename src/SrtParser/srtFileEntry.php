@@ -2,21 +2,21 @@
 /**
  * SubRip File Parser
  * Allows manipulation of .srt files
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *      
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *      
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA. 
+ * MA 02110-1301, USA.
  *
  * @author Julien 'delphiki' Villetorte <gdelphiki@gmail.com>
  * @link http://www.lackofinspiration.com
@@ -108,7 +108,7 @@ class srtFileEntry{
 		$this->stopTC = $_stop;
 		$this->start = self::tc2ms($_start);
 		$this->stop = self::tc2ms($_stop);
-		
+
 		$this->text = trim($_text);
 	}
 
@@ -175,9 +175,9 @@ class srtFileEntry{
 	 *
 	 * @return string
 	 */
-	public function getTimeCodeString($_WebVTT = false){ 
+	public function getTimeCodeString($_WebVTT = false){
 		$res = $this->startTC.' --> '.$this->stopTC;
-		
+
 		if($_WebVTT) $res = str_replace(',', '.', $res);
 
 		return $res;
@@ -283,7 +283,7 @@ class srtFileEntry{
 	/**
 	 * Converts timecode string into milliseconds
 	 *
-	 * @param string $tc timecode as string 
+	 * @param string $tc timecode as string
 	 * @return int
 	 */
 	public static function tc2ms($tc){
@@ -311,7 +311,7 @@ class srtFileEntry{
 		$timecode = str_pad($tc_h, 2, '0', STR_PAD_LEFT).':'
 			.str_pad($tc_m, 2, '0', STR_PAD_LEFT).':'
 			.str_pad($tc_s, 2, '0', STR_PAD_LEFT).','
-			.str_pad($tc_ms, 3, '0', STR_PAD_LEFT);		
+			.str_pad($tc_ms, 3, '0', STR_PAD_LEFT);
 		return $timecode;
 	}
 
@@ -341,26 +341,26 @@ class srtFileEntry{
 
 		$this->readingSpeed = ($this->strlen() * 1000) / ($this->durationMS-500);
 	}
-        
+
         public function scale($baseTime,$factor = 1){
-            
+
             if ($factor==1) return;
-            
+
             $new_start = $baseTime + (($this->getStart() - $baseTime) * $factor);
             $new_stop = $baseTime + (($this->getStop() - $baseTime) * $factor);
 
             $this->setStart($new_start);
             $this->setStop($new_stop);
-            
+
             return true;
 	}
-        
+
         /**
          * Set a delay (positive or negative)
          *
          * @param int $ms Delay in milliseconds
          */
-        
+
         public function shift($time = 0){
 
             if (!is_numeric($time)) return false;
@@ -371,9 +371,9 @@ class srtFileEntry{
 
             $this->setStart($start + $time);
             $this->setStop($stop + $time);
-            
+
             return true;
 
         }
 }
-        
+
